@@ -25,15 +25,21 @@ static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, 
     var feelimit = Environment.GetEnvironmentVariable("feelimit");
     var tokenIdentifier = Environment.GetEnvironmentVariable("tokenIdentifier");
     var ReceiveAddress = Environment.GetEnvironmentVariable("ReceiveAddress");
-    HttpResponseMessage httpResponse = client.GetAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/nile/transactions").GetAwaiter().GetResult();
+    HttpResponseMessage httpResponse = client.GetAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/nile/addresses?context=yourExampleString&limit=50&offset=0").GetAwaiter().GetResult();
     httpResponse.EnsureSuccessStatusCode(); 
     var responseString = await httpResponse.Content.ReadAsStringAsync();
     JObject jObject = JObject.Parse(responseString);
     var direction = jObject["data"]["items"];
     foreach(var item in direction){
-        if(item["direction"].Value<string>().Equals("incoming") && item["fungibleTokens"].HasValues == true){
-            Console.WriteLine(direction);
-            transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<string>();
+        if(item["fungibleTokens"].HasValues == true && item["fungibleTokens"][0]["amount"].Value<double>() > 0){
+            transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
+            transactionModel.recipient = item["fungibleTokens"][0]["recipient"].Value<string>();
+            Console.WriteLine("Income Address: "+transactionModel.recipient);
+            await SendTron(client,walletId,ApiKey,StoreTron,TronEnergy,transactionModel);
+            await SendToken(client,walletId,ApiKey,ReceiveAddress,feelimit,tokenIdentifier,transactionModel);
+        }else if(item["confirmedBalance"]["amount"].Value<double>() >= 13 ){
+            Console.WriteLine(item);
+            transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
             transactionModel.recipient = item["fungibleTokens"][0]["recipient"].Value<string>();
             Console.WriteLine("Income Address: "+transactionModel.recipient);
             await SendTron(client,walletId,ApiKey,StoreTron,TronEnergy,transactionModel);

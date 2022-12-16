@@ -31,20 +31,20 @@ static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, 
     JObject jObject = JObject.Parse(responseString);
     var direction = jObject["data"]["items"];
     foreach(var item in direction){
-        if(item["fungibleTokens"].HasValues == true && item["fungibleTokens"][0]["amount"].Value<double>() > 0){
+        Console.WriteLine(item);
+        if(item["fungibleTokens"].HasValues == true && item["fungibleTokens"][0]["amount"].Value<double>() > 0 && item["confirmedBalance"]["amount"].Value<double>() < 13){
             transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
-            transactionModel.recipient = item["fungibleTokens"][0]["recipient"].Value<string>();
+            transactionModel.recipient = item["address"].Value<string>();
             Console.WriteLine("Income Address: "+transactionModel.recipient);
             await SendTron(client,walletId,ApiKey,StoreTron,TronEnergy,transactionModel);
             await SendToken(client,walletId,ApiKey,ReceiveAddress,feelimit,tokenIdentifier,transactionModel);
-        }else if(item["confirmedBalance"]["amount"].Value<double>() >= 13 ){
-            Console.WriteLine(item);
+        }else if(item["fungibleTokens"].HasValues == true && item["confirmedBalance"]["amount"].Value<double>() >= 13 && item["fungibleTokens"][0]["amount"].Value<double>() > 0){
             transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
-            transactionModel.recipient = item["fungibleTokens"][0]["recipient"].Value<string>();
+            transactionModel.recipient = item["address"].Value<string>();
             Console.WriteLine("Income Address: "+transactionModel.recipient);
-            await SendTron(client,walletId,ApiKey,StoreTron,TronEnergy,transactionModel);
             await SendToken(client,walletId,ApiKey,ReceiveAddress,feelimit,tokenIdentifier,transactionModel);
         }else{
+            Console.WriteLine(item["label"]+" khong co USDT de chuyen");
             continue;
         }
     }

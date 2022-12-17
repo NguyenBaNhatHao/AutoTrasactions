@@ -11,16 +11,15 @@ TransactionModel transactionModel = new TransactionModel();
 var ApiKey = Environment.GetEnvironmentVariable("apiKey");
 var walletId = Environment.GetEnvironmentVariable("walletId");
 var StoreTron = Environment.GetEnvironmentVariable("StoreTron");
-var DefautlAddress = Environment.GetEnvironmentVariable("DefautAddress");
 var TronEnergy = Environment.GetEnvironmentVariable("TronEnergy");
 client.DefaultRequestHeaders.Accept.Clear();
 client.DefaultRequestHeaders.Accept.Add(
     new MediaTypeWithQualityHeaderValue("application/json"));
 client.DefaultRequestHeaders.Add("X-API-Key",ApiKey);
 
-await ProcessRepositoriesAsync(client, walletId, ApiKey, DefautlAddress, StoreTron, TronEnergy, transactionModel);
+await ProcessRepositoriesAsync(client, walletId, ApiKey, StoreTron, TronEnergy, transactionModel);
 
-static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, string? ApiKey, string? DefautlAddress,string? StoreTron,string? TronEnergy,TransactionModel transactionModel)
+static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, string? ApiKey, string? StoreTron,string? TronEnergy,TransactionModel transactionModel)
 {
     var feelimit = Environment.GetEnvironmentVariable("feelimit");
     var tokenIdentifier = Environment.GetEnvironmentVariable("tokenIdentifier");

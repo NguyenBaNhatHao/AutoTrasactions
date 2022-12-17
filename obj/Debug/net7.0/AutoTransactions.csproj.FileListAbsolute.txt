@@ -94,3 +94,9 @@ D:\duantailieuCNTT\AutoTrasactions\obj\Debug\net7.0\refint\AutoTransactions.dll
 D:\duantailieuCNTT\AutoTrasactions\obj\Debug\net7.0\AutoTransactions.pdb
 D:\duantailieuCNTT\AutoTrasactions\obj\Debug\net7.0\AutoTransactions.genruntimeconfig.cache
 D:\duantailieuCNTT\AutoTrasactions\obj\Debug\net7.0\ref\AutoTransactions.dll
+E:\AutoTransactions\bin\Debug\net7.0\System.Data.SqlClient.dll
+E:\AutoTransactions\bin\Debug\net7.0\runtimes\win-arm64\native\sni.dll
+E:\AutoTransactions\bin\Debug\net7.0\runtimes\win-x64\native\sni.dll
+E:\AutoTransactions\bin\Debug\net7.0\runtimes\win-x86\native\sni.dll
+E:\AutoTransactions\bin\Debug\net7.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+E:\AutoTransactions\bin\Debug\net7.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll

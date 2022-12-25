@@ -25,7 +25,6 @@ await ProcessRepositoriesAsync(client, walletId, ApiKey, StoreTron, TronEnergy, 
 static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, string? ApiKey, string? StoreTron,string? TronEnergy,TransactionModel transactionModel)
 {
     var feelimit = Environment.GetEnvironmentVariable("feelimit");
-    var tokenIdentifier = Environment.GetEnvironmentVariable("tokenIdentifier");
     var ReceiveAddress = Environment.GetEnvironmentVariable("ReceiveAddress");
 
     var ServerBGO = Environment.GetEnvironmentVariable("ServerBGO");
@@ -33,7 +32,7 @@ static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, 
     var UserId = Environment.GetEnvironmentVariable("UserId");
     var Password = Environment.GetEnvironmentVariable("Password");
 
-    HttpResponseMessage httpResponse = client.GetAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/nile/addresses?context=yourExampleString&limit=50&offset=0").GetAwaiter().GetResult();
+    HttpResponseMessage httpResponse = client.GetAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/mainnet/addresses?context=yourExampleString&limit=50&offset=0").GetAwaiter().GetResult();
     httpResponse.EnsureSuccessStatusCode(); 
     var responseString = await httpResponse.Content.ReadAsStringAsync();
     JObject jObject = JObject.Parse(responseString);
@@ -44,12 +43,14 @@ static async Task ProcessRepositoriesAsync(HttpClient client, string? walletId, 
             transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
             transactionModel.recipient = item["address"].Value<string>();
             Console.WriteLine("Income Address: "+transactionModel.recipient);
+            var tokenIdentifier = item["fungibleTokens"][0]["identifier"].Value<string>();
             await SendTron(client,walletId,ApiKey,StoreTron,TronEnergy,transactionModel);
             await SendToken(client,walletId,ApiKey,ReceiveAddress,feelimit,tokenIdentifier,ServerBGO,Database,UserId,Password,transactionModel);
         }else if(item["fungibleTokens"].HasValues == true && item["confirmedBalance"]["amount"].Value<double>() >= 13 && item["fungibleTokens"][0]["amount"].Value<double>() > 0){
             transactionModel.amount = item["fungibleTokens"][0]["amount"].Value<double>().ToString();
             transactionModel.recipient = item["address"].Value<string>();
             Console.WriteLine("Income Address: "+transactionModel.recipient);
+            var tokenIdentifier = item["fungibleTokens"][0]["identifier"].Value<string>();
             await SendToken(client,walletId,ApiKey,ReceiveAddress,feelimit,tokenIdentifier,ServerBGO,Database,UserId,Password,transactionModel);
         }else{
             Console.WriteLine(item["label"]+" khong co USDT de chuyen");
@@ -70,7 +71,7 @@ static async Task SendTron (HttpClient client,string? walletId,string? ApiKey, s
     sendCoin.data.item = item;
     string dataJson = JsonConvert.SerializeObject(sendCoin);
     HttpContent c = new StringContent(dataJson, Encoding.UTF8, "application/json");
-    HttpResponseMessage httpResponse = client.PostAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/nile/addresses/"+StoreTron+"/feeless-transaction-requests", c).GetAwaiter().GetResult();
+    HttpResponseMessage httpResponse = client.PostAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/mainnet/addresses/"+StoreTron+"/feeless-transaction-requests", c).GetAwaiter().GetResult();
     httpResponse.EnsureSuccessStatusCode(); 
     
     var responseString = await httpResponse.Content.ReadAsStringAsync();
@@ -102,7 +103,7 @@ static async Task SendToken (HttpClient client, string? walletId, string? ApiKey
     sendToken.data.item = item;
     string dataJson = JsonConvert.SerializeObject(sendToken);
     HttpContent c = new StringContent(dataJson, Encoding.UTF8, "application/json");
-    HttpResponseMessage httpResponse = client.PostAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/nile/addresses/"+transactionModel.recipient+"/feeless-token-transaction-requests", c).GetAwaiter().GetResult();
+    HttpResponseMessage httpResponse = client.PostAsync("https://rest.cryptoapis.io/wallet-as-a-service/wallets/"+walletId+"/tron/mainnet/addresses/"+transactionModel.recipient+"/feeless-token-transaction-requests", c).GetAwaiter().GetResult();
     httpResponse.EnsureSuccessStatusCode(); 
     var responseString = await httpResponse.Content.ReadAsStringAsync();
     // SqlConnection conn = new SqlConnection();
